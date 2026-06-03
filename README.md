@@ -6,13 +6,13 @@ The core project forecasts the Monday-Sunday average TSA checkpoint passenger co
 
 ## Live App
 
+Open the deployed dashboard: https://tsa-forecast-nolanwu.streamlit.app/
+
 Deploy with Streamlit Community Cloud using:
 
 - Main file: `streamlit_app.py`
 - Python version: 3.10 or newer
 - Dependency file: `requirements.txt`
-
-After deployment, add the generated `https://...streamlit.app` URL to your resume, GitHub profile, and LinkedIn Featured section.
 
 ## What The Dashboard Shows
 
