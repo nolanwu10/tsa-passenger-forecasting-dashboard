@@ -1,0 +1,91 @@
+# Data Readiness Report
+
+## Source Status
+
+- Raw TSA rows: 2,702
+- Date range: `2019-01-01` to `2026-05-25`
+- Expected daily rows in range: 2,702
+- Missing dates: 0
+- Duplicate dates: 0
+
+The raw TSA dataset is continuous at daily grain and is ready to be the base table for feature work.
+
+## YTD Signal
+
+Through 2026-05-25, 2026 average daily throughput is 2,388,504. That is +0.74% versus 2025 and +7.25% versus 2019.
+
+|    |   year |   days | total       | average   | avg_yoy_change   |
+|---:|-------:|-------:|:------------|:----------|:-----------------|
+|  0 |   2019 |    145 | 322,920,592 | 2,227,039 |                  |
+|  1 |   2020 |    146 | 173,974,128 | 1,191,604 | -46.49%          |
+|  2 |   2021 |    145 | 169,438,300 | 1,168,540 | -1.94%           |
+|  3 |   2022 |    145 | 276,783,550 | 1,908,852 | +63.35%          |
+|  4 |   2023 |    145 | 321,551,805 | 2,217,599 | +16.17%          |
+|  5 |   2024 |    146 | 345,497,657 | 2,366,422 | +6.71%           |
+|  6 |   2025 |    145 | 343,790,522 | 2,370,969 | +0.19%           |
+|  7 |   2026 |    145 | 346,333,145 | 2,388,504 | +0.74%           |
+
+## Annual Summary
+
+|    |   year |   days | total       | average   | minimum   | maximum   |
+|---:|-------:|-------:|:------------|:----------|:----------|:----------|
+|  0 |   2019 |    365 | 848,102,043 | 2,323,567 | 1,591,158 | 2,882,915 |
+|  1 |   2020 |    366 | 339,774,756 | 928,346   | 113,147   | 2,507,588 |
+|  2 |   2021 |    365 | 585,250,987 | 1,603,427 | 508,467   | 2,458,325 |
+|  3 |   2022 |    365 | 760,071,362 | 2,082,387 | 1,063,856 | 2,639,616 |
+|  4 |   2023 |    365 | 858,548,196 | 2,352,187 | 1,534,786 | 2,908,785 |
+|  5 |   2024 |    366 | 904,068,577 | 2,470,133 | 1,551,896 | 3,088,836 |
+|  6 |   2025 |    365 | 906,735,976 | 2,484,208 | 1,559,165 | 3,134,613 |
+|  7 |   2026 |    145 | 346,333,145 | 2,388,504 | 1,313,323 | 2,976,209 |
+
+## Day-Of-Week Shape Since 2023
+
+|    | day_of_week   |   days | average   |
+|---:|:--------------|-------:|:----------|
+|  0 | Monday        |    178 | 2,542,094 |
+|  1 | Tuesday       |    177 | 2,136,320 |
+|  2 | Wednesday     |    177 | 2,253,852 |
+|  3 | Thursday      |    177 | 2,581,116 |
+|  4 | Friday        |    177 | 2,630,624 |
+|  5 | Saturday      |    177 | 2,231,485 |
+|  6 | Sunday        |    178 | 2,633,043 |
+
+## Busiest Observed Days
+
+|      | Date       | Passengers   |
+|-----:|:-----------|:-------------|
+| 2525 | 2025-11-30 | 3,134,613    |
+| 2364 | 2025-06-22 | 3,096,797    |
+| 2161 | 2024-12-01 | 3,088,836    |
+| 2392 | 2025-07-20 | 3,043,973    |
+| 2378 | 2025-07-06 | 3,041,954    |
+| 2399 | 2025-07-27 | 3,017,861    |
+| 2474 | 2025-10-10 | 3,017,612    |
+| 2014 | 2024-07-07 | 3,013,622    |
+| 2334 | 2025-05-23 | 3,010,183    |
+| 2385 | 2025-07-13 | 3,007,773    |
+
+## Existing Derived Data
+
+- `processed_features.csv` legacy table: {'exists': True, 'rows': 1157, 'min_date': '2023-01-01', 'max_date': '2026-03-02', 'columns': 30}
+- `tsa_daily_calendar_features.csv`: {'exists': True, 'rows': 2702, 'min_date': '2019-01-01', 'max_date': '2026-05-25', 'columns': 31}
+- `weather_history.csv`: {'weather_exists': True, 'weather_rows': 1, 'weather_min_date': '2019-01-01', 'weather_max_date': '2019-01-01', 'weather_columns': ['Date', 'Hub_Severe_Weather_Index']}
+
+The legacy processed features are stale relative to raw TSA data and should not be used for new modeling until rebuilt.
+The existing weather file is too sparse to be model-ready.
+
+## Modeling Readiness Notes
+
+- Use raw TSA as the canonical target table.
+- Rebuild processed features from raw data in a deterministic pipeline.
+- Treat 2020 and 2021 as structural-break years; include them carefully or downweight/exclude depending on the modeling objective.
+- Preserve calendar and matched-history features, but define them in one feature-building module before training.
+- Do not use legacy model artifacts as inputs to the reset modeling pipeline.
+
+## External Data Candidates
+
+- Calendar and holiday structure: federal holidays, observed holidays, Thanksgiving week, Christmas/New Year windows, spring break, school calendar proxies.
+- Airline/network capacity: BTS or schedule-derived flight counts, available seats, cancellations, and delays.
+- Weather: daily severe-weather indicators around major hubs, rebuilt with complete historical coverage.
+- Macro/travel demand: gasoline prices, consumer sentiment, unemployment, airfare indexes, and travel search interest.
+- Market context: if the goal includes Kalshi trading, keep market prices separate from target features to avoid leakage in passenger forecasts.

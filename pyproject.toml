@@ -1,0 +1,38 @@
+[project]
+name = "tsa-project"
+version = "0.1.0"
+description = "Data-first TSA passenger volume forecasting workspace."
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "requests>=2.31",
+    "cryptography>=42.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+modeling = [
+    "xgboost>=2.0",
+    "scikit-learn>=1.4",
+    "joblib>=1.3",
+    "matplotlib>=3.8",
+    "holidays>=0.45",
+]
+markets = [
+    "python-dotenv>=1.0",
+    "scipy>=1.12",
+]
+
+[project.scripts]
+tsa-data = "tsa_project.cli:main"
+tsa-dashboard = "tsa_project.dashboard:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+.cache/
+.cache.sqlite
+.streamlit/secrets.toml
+
+# Large/generated artifacts should be regenerated or explicitly promoted.
+artifacts/models/
+artifacts/reports/
+artifacts/*.log
+data/interim/
+data/processed/
