@@ -647,7 +647,6 @@ def backtest_configs(
             train = supervised[supervised["Date"] < monday]
             if len(train) < 120:
                 continue
-            train_data = data[data["Date"] < monday].copy()
             model = make_model(config)
             model.fit(train[MODEL_FEATURES], train["residual"])
             for known_days in known_day_scenarios:

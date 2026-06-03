@@ -2,9 +2,9 @@
 
 ## Source Status
 
-- Raw TSA rows: 2,702
-- Date range: `2019-01-01` to `2026-05-25`
-- Expected daily rows in range: 2,702
+- Raw TSA rows: 2,710
+- Date range: `2019-01-01` to `2026-06-02`
+- Expected daily rows in range: 2,710
 - Missing dates: 0
 - Duplicate dates: 0
 
@@ -12,18 +12,18 @@ The raw TSA dataset is continuous at daily grain and is ready to be the base tab
 
 ## YTD Signal
 
-Through 2026-05-25, 2026 average daily throughput is 2,388,504. That is +0.74% versus 2025 and +7.25% versus 2019.
+Through 2026-06-02, 2026 average daily throughput is 2,395,978. That is +0.53% versus 2025 and +7.20% versus 2019.
 
 |    |   year |   days | total       | average   | avg_yoy_change   |
 |---:|-------:|-------:|:------------|:----------|:-----------------|
-|  0 |   2019 |    145 | 322,920,592 | 2,227,039 |                  |
-|  1 |   2020 |    146 | 173,974,128 | 1,191,604 | -46.49%          |
-|  2 |   2021 |    145 | 169,438,300 | 1,168,540 | -1.94%           |
-|  3 |   2022 |    145 | 276,783,550 | 1,908,852 | +63.35%          |
-|  4 |   2023 |    145 | 321,551,805 | 2,217,599 | +16.17%          |
-|  5 |   2024 |    146 | 345,497,657 | 2,366,422 | +6.71%           |
-|  6 |   2025 |    145 | 343,790,522 | 2,370,969 | +0.19%           |
-|  7 |   2026 |    145 | 346,333,145 | 2,388,504 | +0.74%           |
+|  0 |   2019 |    153 | 341,955,370 | 2,235,002 |                  |
+|  1 |   2020 |    154 | 176,581,039 | 1,146,630 | -48.70%          |
+|  2 |   2021 |    153 | 183,383,287 | 1,198,584 | +4.53%           |
+|  3 |   2022 |    153 | 294,370,088 | 1,923,988 | +60.52%          |
+|  4 |   2023 |    153 | 340,978,774 | 2,228,619 | +15.83%          |
+|  5 |   2024 |    154 | 366,351,269 | 2,378,904 | +6.74%           |
+|  6 |   2025 |    153 | 364,634,315 | 2,383,231 | +0.18%           |
+|  7 |   2026 |    153 | 366,584,599 | 2,395,978 | +0.53%           |
 
 ## Annual Summary
 
@@ -36,19 +36,19 @@ Through 2026-05-25, 2026 average daily throughput is 2,388,504. That is +0.74% v
 |  4 |   2023 |    365 | 858,548,196 | 2,352,187 | 1,534,786 | 2,908,785 |
 |  5 |   2024 |    366 | 904,068,577 | 2,470,133 | 1,551,896 | 3,088,836 |
 |  6 |   2025 |    365 | 906,735,976 | 2,484,208 | 1,559,165 | 3,134,613 |
-|  7 |   2026 |    145 | 346,333,145 | 2,388,504 | 1,313,323 | 2,976,209 |
+|  7 |   2026 |    153 | 366,584,599 | 2,395,978 | 1,313,323 | 2,976,209 |
 
 ## Day-Of-Week Shape Since 2023
 
 |    | day_of_week   |   days | average   |
 |---:|:--------------|-------:|:----------|
-|  0 | Monday        |    178 | 2,542,094 |
-|  1 | Tuesday       |    177 | 2,136,320 |
-|  2 | Wednesday     |    177 | 2,253,852 |
-|  3 | Thursday      |    177 | 2,581,116 |
-|  4 | Friday        |    177 | 2,630,624 |
-|  5 | Saturday      |    177 | 2,231,485 |
-|  6 | Sunday        |    178 | 2,633,043 |
+|  0 | Monday        |    179 | 2,542,832 |
+|  1 | Tuesday       |    179 | 2,138,850 |
+|  2 | Wednesday     |    178 | 2,254,532 |
+|  3 | Thursday      |    178 | 2,581,565 |
+|  4 | Friday        |    178 | 2,630,957 |
+|  5 | Saturday      |    178 | 2,231,910 |
+|  6 | Sunday        |    179 | 2,634,082 |
 
 ## Busiest Observed Days
 
@@ -68,7 +68,7 @@ Through 2026-05-25, 2026 average daily throughput is 2,388,504. That is +0.74% v
 ## Existing Derived Data
 
 - `processed_features.csv` legacy table: {'exists': True, 'rows': 1157, 'min_date': '2023-01-01', 'max_date': '2026-03-02', 'columns': 30}
-- `tsa_daily_calendar_features.csv`: {'exists': True, 'rows': 2702, 'min_date': '2019-01-01', 'max_date': '2026-05-25', 'columns': 31}
+- `tsa_daily_calendar_features.csv`: {'exists': True, 'rows': 2710, 'min_date': '2019-01-01', 'max_date': '2026-06-02', 'columns': 50}
 - `weather_history.csv`: {'weather_exists': True, 'weather_rows': 1, 'weather_min_date': '2019-01-01', 'weather_max_date': '2019-01-01', 'weather_columns': ['Date', 'Hub_Severe_Weather_Index']}
 
 The legacy processed features are stale relative to raw TSA data and should not be used for new modeling until rebuilt.

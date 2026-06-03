@@ -2,7 +2,7 @@
 
 Live-safe TSA passenger volume forecasting dashboard for weekly travel demand analysis.
 
-The project forecasts the Monday-Sunday average TSA checkpoint passenger count using historical TSA data, calendar and holiday effects, transportation capacity/delay features, calibrated prediction intervals, and an optional Kalshi market comparison layer.
+The core project forecasts the Monday-Sunday average TSA checkpoint passenger count using historical TSA data, calendar and holiday effects, transportation capacity features, live-safe recent TSA history, and calibrated prediction intervals.
 
 ## Live App
 
@@ -46,9 +46,17 @@ Latest documented walk-forward results:
 
 See `docs/live_weekly_model_report.md` for the full model report and limitations.
 
+For a fast reviewer check, see the Reviewer Checklist below.
+
+## Leakage Controls
+
+The live model only uses features listed in `MODEL_FEATURES` in `src/tsa_project/live_weekly_model.py`. Some processed tables contain diagnostic ratio columns, such as TSA passengers per published BTS capacity estimate, but those columns are excluded from the live model unless explicitly added to `MODEL_FEATURES`.
+
+Feature rows are built relative to an `issue_date`, so recent TSA actuals, target-week known days, lag values, and external delay fields are only read from data available at forecast time.
+
 ## Local Setup
 
-From the project root:
+For dashboard-only local use:
 
 ```powershell
 python -m venv .venv
@@ -57,7 +65,42 @@ pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
+For development, tests, linting, and model audit scripts:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt
+```
+
+Equivalent direct install:
+
+```powershell
+pip install -e ".[dev,modeling,markets]" "streamlit>=1.35"
+```
+
 The app will build missing processed feature files from committed raw/external data when needed.
+
+## Reviewer Checklist
+
+Run these from a clean checkout after installing development dependencies:
+
+```powershell
+python -m ruff check .
+python -m pytest
+python scripts/validate_project.py
+python scripts/backtest_live_weekly_model.py --quick
+python scripts/build_model_audit_report.py
+python scripts/analyze_feature_importance.py
+python scripts/predict_live_week.py
+streamlit run streamlit_app.py
+```
+
+The quick commands regenerate lightweight audit reports in `docs/model_audit_summary.md` and `docs/feature_importance_report.md`. The full headline walk-forward backtest is intentionally longer-running:
+
+```powershell
+python scripts/backtest_live_weekly_model.py
+```
 
 ## Data Pipeline
 
@@ -67,12 +110,27 @@ Useful commands:
 python scripts/fetch_tsa_data.py
 python scripts/build_calendar_features.py
 python scripts/build_transport_features.py
+python scripts/validate_project.py
 python scripts/backtest_live_weekly_model.py
+python scripts/backtest_live_weekly_model.py --quick
+python scripts/build_model_audit_report.py
+python scripts/analyze_feature_importance.py
 python scripts/backtest_weekly_ensemble_model.py
 python scripts/predict_live_week.py
 ```
 
 Generated processed data, model artifacts, reports, and logs are intentionally ignored by Git. Rebuild them locally or on first app run.
+
+## Script Organization
+
+Root-level files in `scripts/` are compatibility wrappers for common commands. Implementations are grouped by purpose:
+
+- `scripts/data/`: ingestion, data inspection, and feature builds.
+- `scripts/modeling/`: model training, prediction, and backtesting.
+- `scripts/analysis/`: validation, data readiness, feature importance, and audit reports.
+- `scripts/markets/`: Kalshi data collection and market-comparison workflows.
+
+See `scripts/README.md` for the convention for adding new scripts.
 
 ## Optional Kalshi Setup
 
@@ -105,6 +163,6 @@ TSAproject/
   data/raw/                  TSA source data
   data/external/             Optional external enrichment data
   src/tsa_project/           Modeling, ingestion, dashboard, and market modules
-  scripts/                   Command-line pipeline and analysis tasks
+  scripts/                   Root command wrappers and grouped script implementations
   docs/                      Model, data, and architecture reports
 ```

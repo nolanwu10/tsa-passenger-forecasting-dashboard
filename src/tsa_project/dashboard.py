@@ -19,7 +19,6 @@ import pandas as pd
 
 from tsa_project.config import (
     DAILY_TRANSPORT_FEATURES_PATH,
-    MODEL_ARTIFACTS_DIR,
     PROJECT_ROOT,
     RAW_TSA_PATH,
     REPORT_ARTIFACTS_DIR,

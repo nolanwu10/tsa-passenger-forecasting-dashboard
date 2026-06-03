@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 
 import joblib
 import numpy as np
@@ -10,19 +9,12 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 
 from tsa_project.config import MODEL_ARTIFACTS_DIR, REPORT_ARTIFACTS_DIR
 from tsa_project.live_weekly_model import (
-    DEFAULT_CONFIGS,
-    WEEKLY_REPORT_PATH,
     INTERVAL_LEVELS,
     MODEL_FEATURES,
     MODEL_PATH as DAILY_MODEL_PATH,
+    WEEKLY_REPORT_PATH,
     LiveFeatureFactory,
-    apply_weekly_calibration,
-    build_calibration,
-    load_modeling_data,
-    lookup_calibration,
     predict_week,
-    fit_residual_model,
-    train_final_model,
     week_regime,
 )
 

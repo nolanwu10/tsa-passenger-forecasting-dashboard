@@ -30,6 +30,19 @@ Generated outputs such as trained model files, plots, and performance reports. T
 
 Previous model scripts and generated caches preserved for reference. New work should not import from `legacy`.
 
+## Script Organization
+
+Root-level files in `scripts/` are compatibility wrappers for stable commands used by reviewers, CI, and the README.
+
+Script implementations are grouped by purpose:
+
+- `scripts/data/`: ingestion, data inspection, and feature builds.
+- `scripts/modeling/`: model training, prediction, and backtesting.
+- `scripts/analysis/`: validation, data readiness, feature importance, and audit reports.
+- `scripts/markets/`: Kalshi data collection and market-comparison workflows.
+
+New scripts should be added to the relevant subfolder. Add a root wrapper only when the command should remain part of the stable user-facing workflow.
+
 ## Code Boundaries
 
 `src/tsa_project/config.py`
@@ -55,4 +68,3 @@ Validation checks for row counts, date parsing, nulls, duplicates, and required 
 3. Define a deterministic processed dataset builder.
 4. Add validation tests before reintroducing model training.
 5. Add modeling only after the data contract is stable.
-

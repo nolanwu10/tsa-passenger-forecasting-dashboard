@@ -25,6 +25,8 @@ Layer 2: residual model
 - `sklearn.ensemble.HistGradientBoostingRegressor`
 - Target is `actual_passengers - deterministic_baseline`.
 - Uses only live-safe features.
+- The model feature list is explicitly declared in `MODEL_FEATURES` in `src/tsa_project/live_weekly_model.py`.
+- Diagnostic ratio columns in generated processed tables are not used by the live model unless they are added to `MODEL_FEATURES`.
 
 Layer 3: weekly confidence calibration
 
@@ -58,6 +60,21 @@ Walk-forward weekly backtest:
 
 The richer holiday/regime features improved the pre-week weekly MAPE from the prior `1.83%` to `1.74%`. Midweek accuracy remains strongest after Wednesday actuals are known.
 
+## Reproducibility Checks
+
+Fast reviewer commands:
+
+```powershell
+python scripts/validate_project.py
+python scripts/backtest_live_weekly_model.py --quick
+python scripts/build_model_audit_report.py
+python scripts/analyze_feature_importance.py
+```
+
+The quick audit report is written to `docs/model_audit_summary.md`. It includes a deterministic-baseline comparison so the residual ML layer can be evaluated separately from the hand-built calendar/history baseline.
+
+The feature report is written to `docs/feature_importance_report.md`. It uses holdout permutation importance to show which feature groups the residual model depends on.
+
 ## Regime Findings
 
 Pre-week prediction is already usually inside +/-50k for summer, July 4, Memorial/Labor, Thanksgiving, and Christmas/New Year regimes in the current sample, but several of those groups have small sample sizes.
@@ -68,15 +85,17 @@ Hardest regimes:
 - Normal weeks with no obvious travel-event anchor.
 - Christmas/New Year and Thanksgiving when predicting midweek can still have large misses because the remaining travel days are highly asymmetric.
 
-## Trading Confidence
+## Market Comparison
 
-For a strict +/-50k trading boundary:
+The Kalshi comparison layer is optional. It is not required for the TSA forecasting model to run, and market/trading results should be interpreted separately from forecast accuracy.
+
+For a strict +/-50k market boundary:
 
 - Pre-week forecasts are not reliable enough by default: 73.6% historical within +/-50k.
 - After Monday-Tuesday, the model reaches about 80.6% within +/-50k.
 - After Monday-Wednesday, the model reaches about 84.7% within +/-50k.
 
-The prediction script now prints calibrated ranges and a `Trade-range confidence under 50k` flag. Treat that flag as a filter, not a guarantee.
+The prediction script prints calibrated ranges and a `Trade-range confidence under 50k` flag. Treat that flag as a filter, not a guarantee.
 
 ## Artifacts
 
@@ -141,3 +160,5 @@ python scripts/backtest_weekly_ensemble_model.py
 ## Notes
 
 The model intentionally does not use same-day BTS delay values for future predictions. BTS delay data is not live enough for same-week forecasting in this pipeline.
+
+BTS daily delay fields are sparse in the committed data snapshot, so they are treated as weak optional context. Current feature importance reporting shows that calendar and matched-history/recent TSA features carry most of the live model signal.
