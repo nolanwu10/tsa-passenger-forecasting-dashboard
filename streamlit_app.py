@@ -14,7 +14,10 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from tsa_project.dashboard import build_summary, kalshi_status, predict_current_week
+from tsa_project.features import write_calendar_holiday_features
+from tsa_project.ingest_tsa import write_tsa_passenger_data
 from tsa_project.kalshi import build_market_dashboard
+from tsa_project.transport_features import write_transport_features
 
 
 BACKTEST_SUMMARY = pd.DataFrame(
@@ -65,6 +68,18 @@ def cached_summary() -> dict[str, object]:
 @st.cache_data(show_spinner="Running TSA weekly forecast...", ttl=300)
 def cached_prediction() -> dict[str, object]:
     return predict_current_week()
+
+
+def refresh_forecast_data() -> dict[str, object]:
+    raw = write_tsa_passenger_data()
+    calendar = write_calendar_holiday_features(raw)
+    transport = write_transport_features()
+    return {
+        "rows": int(len(transport)),
+        "latest_date": pd.Timestamp(transport["Date"].max()).date().isoformat(),
+        "raw_rows": int(len(raw)),
+        "calendar_rows": int(len(calendar)),
+    }
 
 
 def format_int(value: object) -> str:
@@ -203,8 +218,18 @@ def main() -> None:
 
     refresh = st.button("Refresh forecast data")
     if refresh:
-        cached_summary.clear()
-        cached_prediction.clear()
+        try:
+            with st.spinner("Fetching TSA data and rebuilding forecast features..."):
+                refresh_result = refresh_forecast_data()
+        except Exception as exc:
+            st.error(f"Refresh failed: {exc}")
+        else:
+            cached_summary.clear()
+            cached_prediction.clear()
+            st.success(
+                "Forecast data refreshed through "
+                f"{refresh_result['latest_date']} ({refresh_result['rows']:,} feature rows)."
+            )
 
     summary = cached_summary()
     prediction = cached_prediction()
