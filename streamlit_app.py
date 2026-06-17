@@ -49,6 +49,47 @@ BACKTEST_SUMMARY = pd.DataFrame(
 )
 
 
+def render_home_button() -> None:
+    st.markdown(
+        """
+        <style>
+        .home-link {
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 999999;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 2.25rem;
+            padding: 0 0.85rem;
+            border: 1px solid rgba(49, 51, 63, 0.18);
+            border-radius: 0.375rem;
+            background: rgba(255, 255, 255, 0.96);
+            color: #111827;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+        }
+        .home-link:hover {
+            border-color: rgba(49, 51, 63, 0.35);
+            color: #111827;
+            text-decoration: none;
+        }
+        @media (max-width: 640px) {
+            .home-link {
+                position: static;
+                margin-bottom: 0.75rem;
+            }
+        }
+        </style>
+        <a class="home-link" href="/" target="_self">Home</a>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def apply_streamlit_secrets() -> None:
     secrets_paths = [
         Path.home() / ".streamlit" / "secrets.toml",
@@ -228,6 +269,7 @@ def main() -> None:
         layout="wide",
     )
     apply_streamlit_secrets()
+    render_home_button()
 
     st.title("TSA Passenger Forecasting Dashboard")
     st.caption(
