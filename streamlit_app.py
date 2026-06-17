@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import requests
 import streamlit as st
 
 
@@ -14,6 +15,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from tsa_project.dashboard import build_summary, kalshi_status, predict_current_week
+from tsa_project.config import RAW_TSA_PATH
 from tsa_project.features import write_calendar_holiday_features
 from tsa_project.ingest_tsa import write_tsa_passenger_data
 from tsa_project.kalshi import build_market_dashboard
@@ -71,10 +73,27 @@ def cached_prediction() -> dict[str, object]:
 
 
 def refresh_forecast_data() -> dict[str, object]:
-    raw = write_tsa_passenger_data()
+    status = "refreshed"
+    message = "Fetched the latest TSA passenger data."
+    try:
+        raw = write_tsa_passenger_data()
+    except requests.HTTPError as exc:
+        if not RAW_TSA_PATH.exists():
+            raise
+        response = exc.response
+        if response is None or response.status_code != 403:
+            raise
+        raw = pd.read_csv(RAW_TSA_PATH, parse_dates=["Date"])
+        status = "cached"
+        message = (
+            "TSA blocked live refresh from this server with HTTP 403. "
+            "Using the cached CSV committed by the scheduled data refresh."
+        )
     calendar = write_calendar_holiday_features(raw)
     transport = write_transport_features()
     return {
+        "status": status,
+        "message": message,
         "rows": int(len(transport)),
         "latest_date": pd.Timestamp(transport["Date"].max()).date().isoformat(),
         "raw_rows": int(len(raw)),
@@ -226,10 +245,14 @@ def main() -> None:
         else:
             cached_summary.clear()
             cached_prediction.clear()
-            st.success(
-                "Forecast data refreshed through "
+            refresh_message = (
+                f"{refresh_result['message']} Data is current through "
                 f"{refresh_result['latest_date']} ({refresh_result['rows']:,} feature rows)."
             )
+            if refresh_result["status"] == "cached":
+                st.warning(refresh_message)
+            else:
+                st.success(refresh_message)
 
     summary = cached_summary()
     prediction = cached_prediction()
